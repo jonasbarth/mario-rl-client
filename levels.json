@@ -1,0 +1,26 @@
+{
+    "original": [
+       "/levels/original/lvl-1.txt",
+       "/levels/original/lvl-2.txt",
+       "/levels/original/lvl-3.txt",
+       "/levels/original/lvl-4.txt",
+       "/levels/original/lvl-5.txt",
+       "/levels/original/lvl-6.txt",
+       "/levels/original/lvl-7.txt",
+       "/levels/original/lvl-8.txt",
+       "/levels/original/lvl-9.txt",
+       "/levels/original/lvl-10.txt",
+       "/levels/original/lvl-11.txt",
+       "/levels/original/lvl-12.txt",
+       "/levels/original/lvl-13.txt",
+       "/levels/original/lvl-14.txt",
+       "/levels/original/lvl-15.txt"
+    ],
+    "custom": [
+        "/levels/custom/flat.txt",
+        "/levels/custom/quick_victory.txt",
+        "/levels/custom/quick_victory_2.txt",
+        "/levels/custom/quick_victory_3.txt",
+        "/levels/custom/goomba_death.txt"
+    ]
+}
