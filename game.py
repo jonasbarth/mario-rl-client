@@ -1,4 +1,4 @@
-from py4j.java_gateway import JavaGateway
+from py4j.java_gateway import JavaGateway, GatewayParameters
 from py4j.java_collections import SetConverter, MapConverter, ListConverter
 import numpy as np
 import torch
@@ -12,7 +12,7 @@ class Game:
         self.timer = timer
         self.fps = fps
         self.level_path = level_path
-        self.gateway = JavaGateway()
+        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(port=25335))
         self.preprocessor = preprocessor
         self.right =  [False,True,False,False,False]
         self.right_run = [False,True,False,True,False]
@@ -46,13 +46,15 @@ class Game:
         obs = self.gateway.entry_point.executeAction(java_list)
         
         reward = obs.getValue()
-        frames = obs.getByteArray()
         game_status = obs.getGameStatus()
 
-        processed_frames = self.preprocessor.np_array(frames)
-        
-        
-        return (self.to_tensor(processed_frames), reward, game_status)
+        if game_status == "RUNNING":
+            frames = obs.getByteArray()
+            processed_frames = self.preprocessor.np_array(frames) 
+            return (self.to_tensor(processed_frames), reward, game_status)
+
+        else:
+            return (None, reward, game_status)
 
     def tensor_to_action(self, action):
         list_action = action.tolist()

@@ -173,10 +173,10 @@ class DQNAgent:
                 action = self.select_action(state)
                 #print("Action selected")
                 #print("Taking action")
-                next_state, reward, game_status = self.game.step(action)
+                next_state, reward, status = self.game.step(action)
                 #print("Took action", action, "and got reward", reward)
-                print("Game Status", game_status)
-                
+                print("Game Status", status)
+                game_status = status
                 
                 #_, reward, done, _ = env.step(action.item())
                 reward = torch.tensor([reward], device=device)
@@ -204,13 +204,13 @@ class DQNAgent:
                     #self.plot_durations()
                     break
             # Update the target network, copying all weights and biases in DQN
-            if i_episode % TARGET_UPDATE == 0:
+            if i_episode % self.TARGET_UPDATE == 0:
                 self.target_net.load_state_dict(self.policy_net.state_dict())
 
             print("Episode", i_episode, "finished")
             
         print("Training finished")
-        self.save("./DDQN/models/epochs_" + str(self.num_episodes) + "_" + self.client.level[15:-4])
+        self.save("./ddqn/models/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_")
         
         
 
@@ -273,10 +273,12 @@ class DQNAgent:
         next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
         # Compute the expected Q values
         expected_state_action_values = (next_state_values * self.GAMMA) + reward_batch
+        print(state_action_values.shape, expected_state_action_values.shape)
 
         # Reshape the state_action_values
-        state_action_values.resize_((expected_state_action_values.shape[0], expected_state_action_values.shape[1]))
+        state_action_values = torch.reshape(state_action_values, (expected_state_action_values.shape[0], 1, expected_state_action_values.shape[1]))
 
+        print(state_action_values.shape, expected_state_action_values.shape)
         # Compute Huber loss
         loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
 
