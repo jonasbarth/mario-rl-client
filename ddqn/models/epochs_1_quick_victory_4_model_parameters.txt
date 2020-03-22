@@ -1,1 +1,7 @@
-n_actions = 8n_channels = 3batch_size = 128gamma = 0.999eps_start = 0.9eps_end = 0.05eps_decay = 200
+Level = quick_victory_4n_actions = 8
+n_channels = 3
+batch_size = 128
+gamma = 0.999
+eps_start = 0.9
+eps_end = 0.05
+eps_decay = 200
