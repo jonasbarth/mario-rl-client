@@ -171,10 +171,7 @@ class DQNAgent:
             #state = current_screen - last_screen
             state, reward, game_status = self.game.start_state()
 
-            # the loss for the episode
-            i_loss = np.array([])
-          
-            
+         
             print("Initialising start state")
             for t in count():
                 # Select and perform an action
@@ -210,9 +207,6 @@ class DQNAgent:
                 # Perform one step of the optimization (on the target network)
                 # Save the loss
                 self.optimize_model()
-                
-
-                print(total_loss, i_loss)
 
                 if game_status != "RUNNING":
                     self.episode_durations.append(t + 1)
@@ -229,7 +223,7 @@ class DQNAgent:
             
         print("Training finished")
         self.save_model("./ddqn/models/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_")
-        self.save_loss("./ddqn/loss/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_")
+        self.save_loss("./ddqn/loss/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_", total_loss)
         
         
 
@@ -292,15 +286,16 @@ class DQNAgent:
         next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
         # Compute the expected Q values
         expected_state_action_values = (next_state_values * self.GAMMA) + reward_batch
-        print(state_action_values.shape, expected_state_action_values.shape)
+     
 
         # Reshape the state_action_values
         state_action_values = torch.reshape(state_action_values, (expected_state_action_values.shape[0], 1, expected_state_action_values.shape[1]))
 
-        print(state_action_values.shape, expected_state_action_values.shape)
+        print("Computing loss")
         # Compute Huber loss
         loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
-      
+
+        print("Optimising model")
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
@@ -342,13 +337,14 @@ class DQNAgent:
         parameter_path = path + "model_parameters.txt"
         self.delete(parameter_path)
         f = open(parameter_path, "w+")
-        f.write("n_actions = " + str(self.n_actions))
-        f.write("n_channels = " + str(self.n_channels))
-        f.write("batch_size = " + str(self.BATCH_SIZE))
-        f.write("gamma = " + str(self.GAMMA))
-        f.write("eps_start = " + str(self.EPS_START))
-        f.write("eps_end = " + str(self.EPS_END))
-        f.write("eps_decay = " + str(self.EPS_DECAY))
+        f.write("Level = " + self.game.level_path[15:-4])
+        f.write("n_actions = " + str(self.n_actions) + "\n")
+        f.write("n_channels = " + str(self.n_channels) + "\n")
+        f.write("batch_size = " + str(self.BATCH_SIZE) + "\n")
+        f.write("gamma = " + str(self.GAMMA) + "\n")
+        f.write("eps_start = " + str(self.EPS_START) + "\n")
+        f.write("eps_end = " + str(self.EPS_END) + "\n")
+        f.write("eps_decay = " + str(self.EPS_DECAY) + "\n")
         f.close()
         
         
@@ -428,7 +424,7 @@ class DQNAgent:
         return cum_rewards
 
 
-    def save_loss(self, loss):
+    def save_loss(self, path, loss):
         """
         Saves the loss of the entire training duration as a pandas dataframe.
         Loss is a numpy array of dimensions 1.
@@ -444,7 +440,7 @@ class DQNAgent:
         eps_loss = np.append(episodes, loss, axis=1)
 
         df = pd.DataFrame(data=eps_loss, columns=["episode", "huber_loss"])
-        df.to_csv("loss.csv")
+        df.to_csv(path + "loss.csv")
         print("Loss saved")
 
 
