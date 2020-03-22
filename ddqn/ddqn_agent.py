@@ -3,10 +3,12 @@ import random
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import pandas as pd
 from collections import namedtuple
 from itertools import count
 from PIL import Image
 import os, errno
+
 
 
 import torch
@@ -128,6 +130,8 @@ class DQNAgent:
         self.steps_done = 0
         self.buffer = torch.randn((4,self.n_channels,screen_height,screen_width))
         self.game = game
+        self.i_loss = np.array([])
+       
         
         
     def select_action(self, state):
@@ -154,6 +158,9 @@ class DQNAgent:
             return torch.tensor([[random.randrange(self.n_actions)]], device=device, dtype=torch.long)
 
     def train(self):
+
+        total_loss = np.array([])
+
         for i_episode in range(self.num_episodes):
             print("Training episode:", i_episode)
             # Initialize the environment and state
@@ -163,6 +170,9 @@ class DQNAgent:
             #current_screen = get_screen()
             #state = current_screen - last_screen
             state, reward, game_status = self.game.start_state()
+
+            # the loss for the episode
+            i_loss = np.array([])
           
             
             print("Initialising start state")
@@ -198,7 +208,12 @@ class DQNAgent:
                 
                 #print("Optimising model")
                 # Perform one step of the optimization (on the target network)
+                # Save the loss
                 self.optimize_model()
+                
+
+                print(total_loss, i_loss)
+
                 if game_status != "RUNNING":
                     self.episode_durations.append(t + 1)
                     #self.plot_durations()
@@ -207,10 +222,14 @@ class DQNAgent:
             if i_episode % self.TARGET_UPDATE == 0:
                 self.target_net.load_state_dict(self.policy_net.state_dict())
 
+            total_loss = np.append(total_loss, self.i_loss.mean())
+            self.i_loss = np.array([])
             print("Episode", i_episode, "finished")
+
             
         print("Training finished")
-        self.save("./ddqn/models/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_")
+        self.save_model("./ddqn/models/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_")
+        self.save_loss("./ddqn/loss/epochs_" + str(self.num_episodes) + "_" + self.game.level_path[15:-4] + "_")
         
         
 
@@ -281,13 +300,16 @@ class DQNAgent:
         print(state_action_values.shape, expected_state_action_values.shape)
         # Compute Huber loss
         loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
-
+      
         # Optimize the model
         self.optimizer.zero_grad()
         loss.backward()
         for param in self.policy_net.parameters():
             param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
+
+        self.i_loss = np.append(self.i_loss, loss.item())
+
 
 
     def normalise_pixels(self, state):
@@ -307,7 +329,7 @@ class DQNAgent:
             current_frame = next_frame
             
 
-    def save(self, path):
+    def save_model(self, path):
         policy_path = path + "policy.pt"
         target_path = path + "target.pt"
         self.delete(policy_path)
@@ -330,7 +352,7 @@ class DQNAgent:
         f.close()
         
         
-    def load(self, path):
+    def load_model(self, path):
         policy_path = path + "policy.pt"
         target_path = path + "target.pt"
         
@@ -404,6 +426,29 @@ class DQNAgent:
             
         print("Training finished")
         return cum_rewards
+
+
+    def save_loss(self, loss):
+        """
+        Saves the loss of the entire training duration as a pandas dataframe.
+        Loss is a numpy array of dimensions 1.
+        """
+        print("Saving loss")
+        # add another dimension for episode values
+        loss = np.expand_dims(loss, axis=1)
+
+        # create a column with episode numbers
+        episodes = np.arange(1, self.num_episodes + 1)
+        episodes = np.expand_dims(episodes, axis=1)
+
+        eps_loss = np.append(episodes, loss, axis=1)
+
+        df = pd.DataFrame(data=eps_loss, columns=["episode", "huber_loss"])
+        df.to_csv("loss.csv")
+        print("Loss saved")
+
+
+
        
 
 
