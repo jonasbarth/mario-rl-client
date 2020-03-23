@@ -370,19 +370,14 @@ class DQNAgent:
             
             
     def play(self, num_epochs):
-        cum_rewards = {}
+        total_rewards = np.array([])
         for i_episode in range(num_epochs):
-            print("Training episode:", i_episode)
-            cum_rewards[i_episode] = 0
-            # Initialize the environment and state
-            # Send POST init to the server and get the state
-            #env.reset()
-            #last_screen = get_screen()
-            #current_screen = get_screen()
-            #state = current_screen - last_screen
-            frames = self.client.init_env()[0]
-           
-            state = self.resize_frames(frames)
+            print("Playing episode", i_episode)
+            
+
+            state, reward, game_status = self.game.start_state()
+
+            eps_reward = np.array([reward])
             
             print("Initialising start state")
             for t in count():
@@ -391,14 +386,15 @@ class DQNAgent:
                 action = self.policy_net(state).max(1)[1].max().view(1, 1)
                 #print("Action selected")
                 #print("Taking action")
-                frames, reward, game_status = self.client.step(action)
-                cum_rewards[i_episode] += reward
+                next_state, reward, game_status = self.game.step(action)
+                
+                eps_reward = np.append(eps_reward, reward)
                 #print("Took action", action, "and got reward", reward)
                 print("Game Status", game_status)
-                next_state = self.resize_frames(frames)
+                print("Reward:", reward)
                 
                 #_, reward, done, _ = env.step(action.item())
-                reward = torch.tensor([reward], device=device)
+                #reward = torch.tensor([reward], device=device)
 
                 # Observe new state
                 #last_screen = current_screen
@@ -418,10 +414,13 @@ class DQNAgent:
                     #self.plot_durations()
                     break
 
+            total_rewards = np.append(total_rewards, eps_reward.sum())
+
             print("Episode", i_episode, "finished")
             
-        print("Training finished")
-        return cum_rewards
+        print("Playing finished")
+        return total_rewards
+        
 
 
     def save_loss(self, path, loss):

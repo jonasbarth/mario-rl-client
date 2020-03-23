@@ -2,6 +2,8 @@ from py4j.java_gateway import JavaGateway, GatewayParameters
 from py4j.java_collections import SetConverter, MapConverter, ListConverter
 import numpy as np
 import torch
+import os, errno
+import pandas as pd
 
 class Game:
     
@@ -62,6 +64,50 @@ class Game:
 
     def to_tensor(self, np_frames):
         return torch.FloatTensor(np_frames)
+
+
+    def save_model(self, model, path):
+        self.delete(path)
+        print("Saving model")
+        torch.save(model.state_dict(), path)
+        print("Model saved")
+
+
+    def save_parameters(self, path, level, n_actions, n_channels, batch_size, gamma):
+        self.delete(path)
+        f = open(path, "w+")
+        f.write("Level = " + self.game.level_path[15:-4])
+        
+        f.close()
+        
+        
+    def load_model(self, path):
+        policy_path = path + "policy.pt"
+        target_path = path + "target.pt"
+        print("Loading model")
+        return torch.load(path)
+       
+        
+        
+    def delete(self, path):
+        try:
+            os.remove(path)
+        except OSError as e: # this would be "except OSError, e:" before Python 2.6
+            if e.errno != errno.ENOENT:
+                pass
+
+
+    def save_loss(self, path, loss):
+        """
+        Saves the loss of the entire training duration as a pandas dataframe.
+        Loss is a numpy array of dimensions 1.
+        """
+        print("Saving loss")
+
+
+        df = pd.DataFrame(data=loss, columns=["loss"])
+        df.to_csv(path + "loss.csv")
+        print("Loss saved")
         
         
         
