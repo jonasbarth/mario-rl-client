@@ -82,8 +82,7 @@ class Game:
         
         
     def load_model(self, path):
-        policy_path = path + "policy.pt"
-        target_path = path + "target.pt"
+       
         print("Loading model")
         return torch.load(path)
        

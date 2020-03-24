@@ -1,0 +1,35 @@
+SEED = 1
+BATCH_SIZE = 32
+GAMMA = 0.99
+REPLAY_BUFFER_SIZE = 100000
+LEARNING_STARTS = 1000
+#LEARNING_STARTS = 5 #debug for back_prop
+LEARNING_FREQ = 4
+FRAME_HISTORY_LEN = 4
+TARGER_UPDATE_FREQ = 300
+LEARNING_RATE = 0.00025
+ALPHA = 0.95
+EPS = 0.01
+num_episodes = 100
+
+
+optimizer_spec = OptimizerSpec(
+        constructor=optim.RMSprop,
+        kwargs=dict(lr=LEARNING_RATE, alpha=ALPHA, eps=EPS),
+    )
+
+exploration_schedule = LinearSchedule(1000000, 0.1)
+    
+n_frames = 1
+n_channels = 3
+original_width = 256
+original_height = 240
+scaled_width = 84
+scaled_height = 84
+
+game_visible = True
+mario_scale = 2.0
+mario_state = 0
+mario_timer = 200
+mario_fps = 30
+level_path = "/levels/custom/quick_victory_4.txt"

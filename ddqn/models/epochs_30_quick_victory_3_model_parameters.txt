@@ -1,0 +1,1 @@
+n_actions = 8n_channels = 3batch_size = 128gamma = 0.999eps_start = 0.9eps_end = 0.05eps_decay = 200
