@@ -81,8 +81,8 @@ class DDQNAgent:
         if sample > eps_threshold:
             obs = torch.from_numpy(obs).type(dtype).unsqueeze(0) / 255.0
             # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
-            
-            return model(Variable(obs, volatile=True)).data.max(1)[1].view(-1, 1).cpu()
+            with torch.no_grad():
+                return model(Variable(obs, volatile=True)).data.max(1)[1].view(-1, 1).cpu()
         else:
             return torch.IntTensor([[random.randrange(self.num_actions)]])
 
@@ -163,7 +163,7 @@ class DDQNAgent:
                         t % self.learning_freq == 0 and
                         replay_buffer.can_sample(self.batch_size)):
 
-                    print("Training network")
+                    print("\tTraining network")
                     # Use the replay buffer to sample a batch of transitions
                     # Note: done_mask[i] is 1 if the next state corresponds to the end of an episode,
                     # in which case there is no Q-value at the next state; at the end of an
@@ -180,7 +180,7 @@ class DDQNAgent:
                         act_batch = act_batch.cuda()
                         rew_batch = rew_batch.cuda()
 
-                    print(obs_batch.shape)
+                       
                     # Compute current Q value, q_func takes only state and output value for every state-action pair
                     # We choose Q based on action taken.
                     current_Q_values = Q(obs_batch).gather(1, act_batch.view(-1, 1))

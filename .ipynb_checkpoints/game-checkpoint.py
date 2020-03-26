@@ -57,6 +57,10 @@ class Game:
 
         else:
             return (None, reward, game_status)
+        
+    def reset(self, level_path):
+        self.level_path = level_path
+        return self.start_state()
 
     def tensor_to_action(self, action):
         list_action = action.tolist()
