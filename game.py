@@ -39,7 +39,7 @@ class Game:
         
         processed_frames = self.preprocessor.np_array(frames)
         
-        return (self.to_tensor(processed_frames), reward, game_status)
+        return (self.to_tensor(processed_frames)[-1], reward, game_status)
         
     
     def step(self, action):
@@ -53,7 +53,7 @@ class Game:
         if game_status == "RUNNING":
             frames = obs.getByteArray()
             processed_frames = self.preprocessor.np_array(frames) 
-            return (self.to_tensor(processed_frames), reward, game_status)
+            return (self.to_tensor(processed_frames)[-1], reward, game_status)
 
         else:
             return (None, reward, game_status)
@@ -68,6 +68,11 @@ class Game:
 
     def to_tensor(self, np_frames):
         return torch.FloatTensor(np_frames)
+
+    
+    def status_to_bool(self, game_status):
+        map = {"RUNNING": True, "TIME_OUT": False, "WIN": False, "LOSE": False}
+        return map[game_status]
 
 
     def save_model(self, model, path):
@@ -86,9 +91,13 @@ class Game:
         
         
     def load_model(self, path):
-       
+        cuda_available = torch.cuda.is_available()
+        device = 'cpu'
+        if cuda_available:
+            device = 'gpu'
+        
         print("Loading model")
-        return torch.load(path)
+        return torch.load(path, map_location=torch.device(device))
        
         
         
