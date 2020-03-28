@@ -127,7 +127,9 @@ class DDQNAgent:
             game_status = self.status_to_bool(game_status)
             LOG_EVERY_N_STEPS = 10000
             
-            
+            # The loss and for the episode
+            i_loss = np.array([])
+            i_reward = np.array([])
 
             for t in count():
 
@@ -171,6 +173,7 @@ class DDQNAgent:
                 # Note that this is only done if the replay buffer contains enough samples
                 # for us to learn something useful -- until then, the model will not be
                 # initialized and random actions should be taken
+                # 
                 if (t > self.learning_starts and
                         t % self.learning_freq == 0 and
                         replay_buffer.can_sample(self.batch_size)):
@@ -245,7 +248,9 @@ class DDQNAgent:
 
             # Add the cumulative loss of the episode to tensorboard
             tb.add_scalar("Cumulative Loss per episode", i_loss.sum(), i_episode)
-            tb.add_scalar("Cumulative Rewward per episode", i_reward.sum(), i_episode)
+            tb.add_scalar("Cumulative Reward per episode", i_reward.sum(), i_episode)
+            tb.add_scalar("Average reward per episode", i_reward.mean(), i_episode)
+            tb.add_scalar("Average Loss per episode", i_loss.mean(), i_episode)
 
             # Append the average loss over episode i to the total loss
             print("Loss", i_loss)
@@ -257,9 +262,7 @@ class DDQNAgent:
         target_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(Q, policy_path)
         self.env.save_model(target_Q, target_path)
-        
-        loss_path = "./loss/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_"
-        self.env.save_loss(loss_path, total_loss)
+      
         print("Training finished")
         
         

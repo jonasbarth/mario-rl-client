@@ -63,7 +63,6 @@ class OCAgent:
             greedy_option  = self.option_critic.greedy_option(state)
             current_option = 0
 
-            print(obs.shape)
             # The loss and for the episode
             i_loss = np.array([])
             i_reward = np.array([])
@@ -114,6 +113,8 @@ class OCAgent:
 
                     tb.add_scalar("Cumulative Loss per episode", i_loss.sum(), i_episode)
                     tb.add_scalar("Cumulative Rewward per episode", i_reward.sum(), i_episode)
+                    tb.add_scalar("Average reward per episode", i_reward.mean(), i_episode)
+                    tb.add_scalar("Average Loss per episode", i_loss.mean(), i_episode)
                     break
 
                 buffer.push(obs, current_option, reward, next_obs, done)
@@ -159,8 +160,8 @@ class OCAgent:
             #logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
         policy_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
         target_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
-        self.env.save_model(self.option_critic.state_dict(), policy_path)
-        self.env.save_model(self.option_critic_target.state_dict(), target_path)
+        self.env.save_model(self.option_critic, policy_path)
+        self.env.save_model(self.option_critic_target, target_path)
 
 
     def play(self, model, args):
