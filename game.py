@@ -74,6 +74,9 @@ class Game:
         map = {"RUNNING": True, "TIME_OUT": False, "WIN": False, "LOSE": False}
         return map[game_status]
 
+    def level_name(self):
+        return self.level_path[self.level_path.rfind("/")+1:]
+
 
     def save_model(self, model, path):
         self.delete(path)

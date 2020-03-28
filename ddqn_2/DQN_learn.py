@@ -50,12 +50,12 @@ class DDQNAgent:
             optimizer_spec, 
             exploration, 
             replay_buffer_size, 
-            batch_size=32, 
-            gamma=0.99, 
-            learning_starts=50000,
-            learning_freq=4,
-            frame_history_len=4,
-            target_update_freq=10000,
+            batch_size, 
+            gamma, 
+            learning_starts,
+            learning_freq,
+            frame_history_len,
+            target_update_freq,
             ):
 
         self.env = env
@@ -63,11 +63,11 @@ class DDQNAgent:
         self.optimizer_spec = optimizer_spec
         self.exploration = exploration
         self.replay_buffer_size = replay_buffer_size
-        self.batch_size = 32
-        self.gamma = 0.99
+        self.batch_size = batch_size
+        self.gamma = gamma
         self.learning_starts = learning_starts
-        self.learning_freq = 4
-        self.frame_history_len = 4
+        self.learning_freq = learning_freq
+        self.frame_history_len = frame_history_len
         self.target_update_freq = target_update_freq
         self.num_episodes = num_episodes
 
@@ -95,8 +95,13 @@ class DDQNAgent:
 
     def train(self):
 
+        comment = f'replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
+        gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
+        frame_history_len={self.frame_history_len} target_update_freq={self.target_update_freq} \
+        num_episodes={self.num_episodes} level={self.env.level_name()}'
+
         # Writer for Tensorboard
-        tb = SummaryWriter()
+        tb = SummaryWriter(comment=comment)
 
 
         # Initialize target q function and q function

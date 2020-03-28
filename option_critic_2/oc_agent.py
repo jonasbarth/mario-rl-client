@@ -14,7 +14,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 class OCAgent:
 
-    def __init__(self, env, option_critic, num_episodes, max_history, max_steps_total, max_steps_ep, num_options, seed, learning_rate, batch_size, update_frequency, freeze_interval):
+    def __init__(self, env, option_critic, num_episodes, max_history, max_steps_total, max_steps_ep, num_options, seed, learning_rate, batch_size, learning_freq, target_update_freq, gamma, learning_starts):
         self.env = env
         self.option_critic = option_critic
         self.option_critic_target = deepcopy(option_critic)
@@ -26,12 +26,19 @@ class OCAgent:
         self.seed = seed
         self.learning_rate = learning_rate
         self.batch_size = batch_size
-        self.update_frequency = update_frequency
-        self.freeze_interval = freeze_interval
+        self.learning_freq = learning_freq
+        self.target_update_freq = target_update_freq
+        self.gamma = gamma
+        self.learning_starts = learning_starts
 
 
 
     def train(self, args):
+
+        comment = f'replay_buffer_size={self.max_history} batch_size={self.batch_size} \
+        gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
+        num_options={num_options} target_update_freq={self.target_update_freq} \
+        num_episodes={self.num_episodes} level={self.env.level_name()}'
         
         # Writer for Tensorboard
         tb = SummaryWriter()
@@ -129,12 +136,12 @@ class OCAgent:
 
 
                 actor_loss, critic_loss = None, None
-                if len(buffer) > self.batch_size:
+                if len(buffer) > self.batch_size and steps > self.learning_starts:
                     actor_loss = actor_loss_fn(obs, current_option, logp, entropy, \
                         reward, done, next_obs, self.option_critic, self.option_critic_target, args)
                     loss = actor_loss
 
-                    if steps % self.update_frequency == 0:
+                    if steps % self.learning_freq == 0:
                         data_batch = buffer.sample(self.batch_size)
                         critic_loss = critic_loss_fn(self.option_critic, self.option_critic_target, data_batch, args)
                         loss += critic_loss
@@ -145,7 +152,7 @@ class OCAgent:
                     loss.backward()
                     optim.step()
 
-                    if steps % self.freeze_interval == 0:
+                    if steps % self.target_update_freq == 0:
                         self.option_critic_target.load_state_dict(self.option_critic.state_dict())
 
                 # update global steps etc
