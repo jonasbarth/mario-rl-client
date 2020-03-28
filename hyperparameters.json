@@ -10,7 +10,7 @@
     "mario_state":0,
     "mario_timer":200,
     "mario_fps":30,
-    "level_path":"/levels/custom/quick_victory_4.txt",
+    "level_path":"/levels/custom/gap_2.txt",
     "seed":1,
     "batch_size":32,
     "gamma":0.99,
