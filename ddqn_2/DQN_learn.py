@@ -139,7 +139,7 @@ class DDQNAgent:
             
 
             for t in count():
-
+                print("\tStep", t)
                 ### Step the env and store the transition
                 # Store lastest observation in replay memory and last_idx can be used to store action, reward, done
                 last_idx = replay_buffer.store_frame(last_obs)
@@ -151,8 +151,8 @@ class DDQNAgent:
                 
                 action = None
                 # Choose random action if not yet start learning
-                if t > self.learning_starts:
-                    action = self.select_epilson_greedy_action(Q, recent_observations, t)
+                if total_steps > self.learning_starts:
+                    action = self.select_epilson_greedy_action(Q, recent_observations, total_steps)
                    
                 else:
                     action = torch.IntTensor([[random.randrange(self.num_actions)]])
