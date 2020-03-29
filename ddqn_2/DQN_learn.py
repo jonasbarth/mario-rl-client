@@ -136,7 +136,7 @@ class DDQNAgent:
             i_loss = np.array([])
             i_reward = np.array([])
 
-            print(last_obs.shape, last_obs[-1])
+            
 
             for t in count():
 
@@ -181,8 +181,8 @@ class DDQNAgent:
                 # for us to learn something useful -- until then, the model will not be
                 # initialized and random actions should be taken
                 # 
-                if (t > self.learning_starts and
-                        t % self.learning_freq == 0 and
+                if (total_steps > self.learning_starts and
+                        total_steps % self.learning_freq == 0 and
                         replay_buffer.can_sample(self.batch_size)):
 
                     print("\tTraining network")
