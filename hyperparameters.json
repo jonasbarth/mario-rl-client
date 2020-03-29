@@ -9,7 +9,7 @@
     "mario_scale":2.0,
     "mario_state":0,
     "mario_timer":200,
-    "mario_fps":30,
+    "mario_fps":400,
     "level_path":"/levels/custom/gap_2.txt",
     "seed":1,
     "batch_size":32,
@@ -33,5 +33,14 @@
     "max_history":10000,
     "max_steps_total":4000000,
     "max_steps_ep":18000,
-    "freeze_interval":200
+    "freeze_interval":200,
+    "gamma_worker": 0.95,
+    "gamma_manager": 0.99,
+    "tau_worker": 1.00,
+    "entropy_coef": 0.01,
+    "value_worker_loss_coef": 1,
+    "value_manager_loss_coef": 1,
+    "max_grad_norm": 40,
+    "num_processes": 4,
+    "num_steps": 400
 }

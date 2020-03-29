@@ -26,6 +26,8 @@ class Game:
         self.left_jump_run = [True,False,False,True,True]
         self.all_actions = [self.right, self.right_run, self.right_jump, self.right_jump_run, self.left, self.left_run, self.left_jump, self.left_jump_run]
         self.tensor_action_map =  {0: self.right, 1:self.right_run, 2:self.right_jump, 3:self.right_jump_run, 4:self.left, 5:self.left_run, 6:self.left_jump, 7:self.left_jump_run}
+        self.observation_space = np.zeros((self.preprocessor.n_channels, self.preprocessor.scaled_width, self.preprocessor.scaled_height))
+        self.action_space = np.arange((len(self.all_actions)))
 
 
         

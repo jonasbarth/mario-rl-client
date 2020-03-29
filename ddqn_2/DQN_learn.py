@@ -136,11 +136,13 @@ class DDQNAgent:
             i_loss = np.array([])
             i_reward = np.array([])
 
+            print(last_obs.shape, last_obs[-1])
+
             for t in count():
 
                 ### Step the env and store the transition
                 # Store lastest observation in replay memory and last_idx can be used to store action, reward, done
-                last_idx = replay_buffer.store_frame(last_obs[-1])
+                last_idx = replay_buffer.store_frame(last_obs)
                 # encode_recent_observation will take the latest observation
                 # that you pushed into the buffer and compute the corresponding
                 # input that should be given to a Q network by appending some
@@ -288,9 +290,8 @@ class DDQNAgent:
             
             last_obs, reward, game_status = self.env.start_state()
             game_status = self.status_to_bool(game_status)
-           
 
-            print(last_obs.shape)
+            print(last_obs.shape, last_obs[-1])
             
             # The loss for the episode
             i_loss = np.array([])
@@ -299,7 +300,7 @@ class DDQNAgent:
 
                 ### Step the env and store the transition
                 # Store lastest observation in replay memory and last_idx can be used to store action, reward, done
-                last_idx = replay_buffer.store_frame(last_obs[-1])
+                last_idx = replay_buffer.store_frame(last_obs)
                 # encode_recent_observation will take the latest observation
                 # that you pushed into the buffer and compute the corresponding
                 # input that should be given to a Q network by appending some
