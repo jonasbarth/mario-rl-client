@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import torch
 from copy import deepcopy
+from itertools import count
 
 from option_critic import critic_loss as critic_loss_fn
 from option_critic import actor_loss as actor_loss_fn
@@ -37,7 +38,7 @@ class OCAgent:
 
         comment = f'replay_buffer_size={self.max_history} batch_size={self.batch_size} \
         gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
-        num_options={num_options} target_update_freq={self.target_update_freq} \
+        num_options={self.num_options} target_update_freq={self.target_update_freq} \
         num_episodes={self.num_episodes} level={self.env.level_name()}'
         
         # Writer for Tensorboard
@@ -63,8 +64,11 @@ class OCAgent:
         #while steps < self.max_steps_total:
         for i_episode in range(self.num_episodes):
 
+            print("Starting episode", i_episode)
+
             rewards = 0 ; option_lengths = {opt:[] for opt in range(self.num_options)}
 
+            # Start the episode
             obs, reward, game_status = self.env.start_state()
             state = self.option_critic.get_state(to_tensor(obs))
             greedy_option  = self.option_critic.greedy_option(state)
@@ -96,7 +100,9 @@ class OCAgent:
                 break
             """
             done = False ; ep_steps = 0 ; option_termination = True ; curr_op_len = 0
-            while not done: #and ep_steps < self.max_steps_ep:
+            #while not done: #and ep_steps < self.max_steps_ep:
+            for t in count():
+                print("\t Step", t)
                 epsilon = self.option_critic.epsilon
 
                 if option_termination:
