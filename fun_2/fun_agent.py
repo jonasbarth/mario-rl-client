@@ -12,19 +12,40 @@ from torch.utils.tensorboard import SummaryWriter
 
 class FunAgent:
 
-    def __init__(self, env, shared_model, optimizer, seed, learning_rate, num_steps):
+    def __init__(self, 
+            env, 
+            shared_model, 
+            optimizer, 
+            seed, 
+            learning_rate, 
+            num_steps, 
+            gamma, 
+            gamma_worker, 
+            gamma_manager, 
+            alpha, 
+            tau_worker, 
+            entropy_coef,
+            value_manager_loss_coef,
+            value_worker_loss_coef,
+            max_grad_norm
+            ):
         self.env = env
         self.shared_model = shared_model
         self.optimizer = optimizer
         self.seed = seed
         self.learning_rate = learning_rate
         self.num_steps = num_steps
+        self.gamma = gamma
+        self.gamma_worker = gamma_worker
+        self.gamma_manager = gamma_manager
+        self.alpha = alpha
+        self.tau_worker = tau_worker
+        self.entropy_coef = entropy_coef
+        self.value_manager_loss_coef = value_manager_loss_coef
+        self.value_worker_loss_coef = value_worker_loss_coef
+        self.max_grad_norm = max_grad_norm
 
         
-
-
-        
-
 
     def ensure_shared_grads(self, model, shared_model):
         for param, shared_param in zip(model.parameters(),
@@ -126,8 +147,8 @@ class FunAgent:
             value_worker_loss = 0
             gae_worker = torch.zeros(1, 1)
             for i in reversed(range(len(rewards))):
-                R_worker = args.gamma_worker * R_worker + rewards[i] + args.alpha * intrinsic_rewards[i]
-                R_manager = args.gamma_manager * R_manager + rewards[i]
+                R_worker = self.gamma_worker * R_worker + rewards[i] + self.alpha * intrinsic_rewards[i]
+                R_manager = self.gamma_manager * R_manager + rewards[i]
                 advantage_worker = R_worker - values_worker[i]
                 advantage_manager = R_manager - values_manager[i]
                 value_worker_loss = value_worker_loss + 0.5 * advantage_worker.pow(2)
@@ -136,25 +157,25 @@ class FunAgent:
                 # Generalized Advantage Estimation
                 delta_t_worker = \
                     rewards[i] \
-                    + args.alpha * intrinsic_rewards[i]\
-                    + args.gamma_worker * values_worker[i + 1].data \
+                    + self.alpha * intrinsic_rewards[i]\
+                    + self.gamma_worker * values_worker[i + 1].data \
                     - values_worker[i].data
-                gae_worker = gae_worker * args.gamma_worker * args.tau_worker + delta_t_worker
+                gae_worker = gae_worker * self.gamma_worker * self.tau_worker + delta_t_worker
 
                 policy_loss = policy_loss \
-                    - log_probs[i] * gae_worker - args.entropy_coef * entropies[i]
+                    - log_probs[i] * gae_worker - self.entropy_coef * entropies[i]
 
                 if (i + model.c) < len(rewards):
                     # TODO try padding the manager_partial_loss with end values (or zeros)
                     manager_loss = manager_loss \
                         - advantage_manager * manager_partial_loss[i + model.c]
 
-            optimizer.zero_grad()
+            self.optimizer.zero_grad()
 
             total_loss = policy_loss \
                 + manager_loss \
-                + args.value_manager_loss_coef * value_manager_loss \
-                + args.value_worker_loss_coef * value_worker_loss
+                + self.value_manager_loss_coef * value_manager_loss \
+                + self.value_worker_loss_coef * value_worker_loss
 
             total_loss.backward()
             """
@@ -177,7 +198,7 @@ class FunAgent:
                     epoch
                 )
             """
-            torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), self.max_grad_norm)
 
             self.ensure_shared_grads(model, self.shared_model)
-            optimizer.step()
+            self.optimizer.step()
