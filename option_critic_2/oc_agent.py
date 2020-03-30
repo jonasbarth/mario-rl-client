@@ -36,7 +36,7 @@ class OCAgent:
 
     def train(self, args):
 
-        comment = f'replay_buffer_size={self.max_history} batch_size={self.batch_size} \
+        comment = f'_model={Option Critic} replay_buffer_size={self.max_history} batch_size={self.batch_size} \
         gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
         num_options={self.num_options} target_update_freq={self.target_update_freq} \
         num_episodes={self.num_episodes} level={self.env.level_name()}'
@@ -125,7 +125,7 @@ class OCAgent:
                     total_reward = np.append(total_reward, i_reward.sum())
 
                     tb.add_scalar("Cumulative Loss per episode", i_loss.sum(), i_episode)
-                    tb.add_scalar("Cumulative Rewward per episode", i_reward.sum(), i_episode)
+                    tb.add_scalar("Cumulative Reward per episode", i_reward.sum(), i_episode)
                     tb.add_scalar("Average reward per episode", i_reward.mean(), i_episode)
                     tb.add_scalar("Average Loss per episode", i_loss.mean(), i_episode)
                     break
