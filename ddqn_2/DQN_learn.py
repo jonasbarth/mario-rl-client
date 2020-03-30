@@ -95,7 +95,7 @@ class DDQNAgent:
 
     def train(self):
 
-        comment = f'replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
+        comment = f'_model=DQN replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
         gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
         frame_history_len={self.frame_history_len} target_update_freq={self.target_update_freq} \
         num_episodes={self.num_episodes} level={self.env.level_name()}'
@@ -139,7 +139,7 @@ class DDQNAgent:
             
 
             for t in count():
-                print("\tStep", t)
+                #print("\tStep", t)
                 ### Step the env and store the transition
                 # Store lastest observation in replay memory and last_idx can be used to store action, reward, done
                 last_idx = replay_buffer.store_frame(last_obs)
@@ -258,6 +258,7 @@ class DDQNAgent:
             tb.add_scalar("Cumulative Reward per episode", i_reward.sum(), i_episode)
             tb.add_scalar("Average reward per episode", i_reward.mean(), i_episode)
             tb.add_scalar("Average Loss per episode", i_loss.mean(), i_episode)
+            
 
             # Append the average loss over episode i to the total loss
             print("Loss", i_loss)

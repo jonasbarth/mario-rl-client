@@ -27,7 +27,8 @@ class FunAgent:
             entropy_coef,
             value_manager_loss_coef,
             value_worker_loss_coef,
-            max_grad_norm
+            max_grad_norm,
+            num_episodes
             ):
         self.env = env
         self.shared_model = shared_model
@@ -44,6 +45,7 @@ class FunAgent:
         self.value_manager_loss_coef = value_manager_loss_coef
         self.value_worker_loss_coef = value_worker_loss_coef
         self.max_grad_norm = max_grad_norm
+        self.num_episodes = num_episodes
 
         
 
@@ -72,12 +74,15 @@ class FunAgent:
 
         model.train()
 
-        obs, reward, game_status = self.env.start_state()
+        
         #obs = torch.from_numpy(obs)
         done = True
 
         episode_length = 0
-        for epoch in count():
+        #for epoch in count():
+        for i_episode in range(self.num_episodes):
+            print("Episode", i_episode)
+            obs, reward, game_status = self.env.start_state()
             # Sync with the shared model
             model.load_state_dict(self.shared_model.state_dict())
 
@@ -92,7 +97,8 @@ class FunAgent:
             entropies = []  # regularisation
             manager_partial_loss = []
 
-            for step in range(self.num_steps):
+            for t in count():
+                print("\tStep", t)
                 episode_length += 1
                 value_worker, value_manager, action_probs, goal, nabla_dcos, states = model(obs.unsqueeze(0), states)
                 m = Categorical(probs=action_probs)
@@ -107,7 +113,7 @@ class FunAgent:
 
                 # I'm not using the max_episode length as Mario has a timeout
                 #done = done or episode_length >= args.max_episode_length
-                reward = max(min(reward, 1), -1)
+                #reward = max(min(reward, 1), -1)
                 intrinsic_reward = model._intrinsic_reward(states)
                 intrinsic_reward = float(intrinsic_reward)  # TODO batch
 
@@ -120,7 +126,8 @@ class FunAgent:
 
                 if done:
                     episode_length = 0
-                    obs, reward, game_status = self.env.start_state()
+                    break
+                   # obs, reward, game_status = self.env.start_state()
 
                 #obs = torch.from_numpy(obs)
                 values_manager.append(value_manager)
@@ -147,6 +154,7 @@ class FunAgent:
             value_worker_loss = 0
             gae_worker = torch.zeros(1, 1)
             for i in reversed(range(len(rewards))):
+                print("\t\tCalculating worker and manager loss")
                 R_worker = self.gamma_worker * R_worker + rewards[i] + self.alpha * intrinsic_rewards[i]
                 R_manager = self.gamma_manager * R_manager + rewards[i]
                 advantage_worker = R_worker - values_worker[i]
@@ -176,6 +184,8 @@ class FunAgent:
                 + manager_loss \
                 + self.value_manager_loss_coef * value_manager_loss \
                 + self.value_worker_loss_coef * value_worker_loss
+
+            print("\tCalculating total loss")
 
             total_loss.backward()
             """
