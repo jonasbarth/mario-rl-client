@@ -43,7 +43,7 @@ class OCAgent:
         num_episodes={self.num_episodes} level={self.env.level_name()}'
         
         # Writer for Tensorboard
-        tb = SummaryWriter()
+        tb = SummaryWriter(comment=comment)
     
         optim = torch.optim.RMSprop(self.option_critic.parameters(), lr=self.learning_rate)
 
