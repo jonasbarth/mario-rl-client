@@ -8,6 +8,7 @@ from fun import FeudalNet
 from itertools import count
 
 from torch.utils.tensorboard import SummaryWriter
+import numpy as np
 
 
 class FunAgent:
@@ -46,6 +47,7 @@ class FunAgent:
         self.value_worker_loss_coef = value_worker_loss_coef
         self.max_grad_norm = max_grad_norm
         self.num_episodes = num_episodes
+        self.model_name = "FuN"
 
         
 
@@ -58,10 +60,25 @@ class FunAgent:
 
 
     def train(self):
+        """
+        comment = f'_model={self.model_name} \
+        gamma={self.gamma} gamma_worker={self.gamma_worker} gamma_manager={self.gamma_manager} \
+        alpha={self.alpha} tau_worker={self.tau_worker} entropy_coef={self.entropy_coef} \
+        value_manager_loss_coef={self.value_manager_loss_coef} value_worker_loss_coef={self.value_worker_loss_coef} \
+        max_grad_norm={self.max_grad_norm} num_episodes={self.num_episodes} level={self.env.level_name()}'"""
+        comment="_model=" + self.model_name + "_gamma=" + str(self.gamma) + "_gamma_worker=" + str(self.gamma_worker) \
+            + "gamma_manager=" + str(self.gamma_manager) + "_alpha=" + str(self.alpha) + "_tau_worker=" + str(self.tau_worker) \
+            + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \
+            + "_value_worker_loss_coef=" + str(self.value_worker_loss_coef) + "_max_grad_norm=" + str(self.max_grad_norm) \
+            + "_num_episodes=" + str(self.num_episodes) + "_level=" + self.env.level_name()
         #seed = self.seed + self.rank
         torch.manual_seed(self.seed)
 
-       
+        tb = SummaryWriter(comment=comment)
+        total_loss = np.array([])
+        total_reward = np.array([])
+        total_steps = 0
+
         ###observation space is numpy array of pixels
         ###action space is the numpy array of actions
         model = FeudalNet(self.env.observation_space, self.env.action_space, channel_first=True)
@@ -97,9 +114,14 @@ class FunAgent:
             entropies = []  # regularisation
             manager_partial_loss = []
 
+             # The loss and for the episode
+            i_loss = np.array([])
+            i_reward = np.array([])
+
             for t in count():
                 #print("\tStep", t)
                 episode_length += 1
+                total_steps += 1
                 value_worker, value_manager, action_probs, goal, nabla_dcos, states = model(obs.unsqueeze(0), states)
                 m = Categorical(probs=action_probs)
                 action = m.sample()
@@ -110,6 +132,9 @@ class FunAgent:
 
                 obs, reward, game_status = self.env.step(torch.IntTensor([[action.item()]]))
                 done = not self.env.status_to_bool(game_status)
+
+                i_reward = np.append(i_reward, reward)
+                tb.add_scalar("Reward per timestep", reward, total_steps)
 
                 # I'm not using the max_episode length as Mario has a timeout
                 #done = done or episode_length >= args.max_episode_length
@@ -138,6 +163,9 @@ class FunAgent:
 
                 if done:
                     break
+
+            tb.add_scalar("Cumulative Reward per episode", i_reward.sum(), i_episode)
+            tb.add_scalar("Average reward per episode", i_reward.mean(), i_episode)
 
             R_worker = torch.zeros(1, 1)
             R_manager = torch.zeros(1, 1)
@@ -186,7 +214,7 @@ class FunAgent:
                 + self.value_worker_loss_coef * value_worker_loss
 
             print("\tCalculating total loss")
-
+            tb.add_scalar("Total loss per episode", total_loss, i_episode)
             total_loss.backward()
             """
             with lock:
@@ -212,6 +240,7 @@ class FunAgent:
 
             self.ensure_shared_grads(model, self.shared_model)
             self.optimizer.step()
+            
 
         self.save()
 
