@@ -7,13 +7,14 @@ import pandas as pd
 
 class Game:
     
-    def __init__(self, visible, scale, mario_state, timer, fps, level_path, preprocessor):
+    def __init__(self, visible, scale, mario_state, timer, fps, level_path, preprocessor, rgb):
         self.visible = visible
         self.scale = scale
         self.mario_state = mario_state
         self.timer = timer
         self.fps = fps
         self.level_path = level_path
+        self.rgb = rgb
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(port=25335))
         self.preprocessor = preprocessor
         self.right =  [False,True,False,False,False]
@@ -32,7 +33,7 @@ class Game:
 
         
     def start_state(self):
-        obs = self.gateway.entry_point.initGameEnv(self.visible, self.scale, self.mario_state, self.timer, self.fps, self.level_path, self.preprocessor.scaled_width, self.preprocessor.scaled_height)
+        obs = self.gateway.entry_point.initGameEnv(self.visible, self.scale, self.mario_state, self.timer, self.fps, self.level_path, self.preprocessor.scaled_width, self.preprocessor.scaled_height, self.rgb)
         
         reward = obs.getValue()
         frames = obs.getByteArray()

@@ -98,7 +98,7 @@ class FunAgent:
             manager_partial_loss = []
 
             for t in count():
-                print("\tStep", t)
+                #print("\tStep", t)
                 episode_length += 1
                 value_worker, value_manager, action_probs, goal, nabla_dcos, states = model(obs.unsqueeze(0), states)
                 m = Categorical(probs=action_probs)
@@ -212,3 +212,17 @@ class FunAgent:
 
             self.ensure_shared_grads(model, self.shared_model)
             self.optimizer.step()
+
+        self.save()
+
+
+    def save(self):
+        fun_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "fun.pt"
+        worker_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "worker.pt"
+        manager_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "manager.pt"
+        perception_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "perception.pt"
+
+        self.env.save_model(self.shared_model, fun_path)
+        self.env.save_model(self.shared_model.worker, worker_path)
+        self.env.save_model(self.shared_model.manager, manager_path)
+        self.env.save_model(self.shared_model.perception, perception_path)
