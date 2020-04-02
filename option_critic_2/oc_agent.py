@@ -175,8 +175,8 @@ class OCAgent:
             #logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
 
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        policy_path = "./models/" + dt + "_ + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
-        target_path = "./models/" + dt + "_ + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
+        policy_path = "./models/" + dt + "_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
+        target_path = "./models/" + dt + "_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(self.option_critic, policy_path)
         self.env.save_model(self.option_critic_target, target_path)
 
