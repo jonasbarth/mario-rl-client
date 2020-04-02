@@ -91,7 +91,7 @@ class FunAgent:
 
         model.train()
 
-        
+        print(type(model))
         #obs = torch.from_numpy(obs)
         done = True
 
@@ -243,6 +243,54 @@ class FunAgent:
             
 
         self.save()
+
+
+    def play(self):
+
+
+        if self.optimizer is None:
+            print("no shared optimizer")
+            self.optimizer = optim.Adam(self.shared_model.parameters(), lr=self.learning_rate)
+
+
+      
+        #obs = torch.from_numpy(obs)
+        done = True
+
+        #for epoch in count():
+        for i_episode in range(self.num_episodes):
+            print("Episode", i_episode)
+            last_obs, reward, game_status = self.env.start_state()
+            # Sync with the shared model
+            #model.load_state_dict(self.shared_model.state_dict())
+            
+            if done:
+                states = self.shared_model.init_state(1)
+            else:
+                states = self.shared_model.reset_states_grad(states)
+            
+          
+            for t in count():
+               
+                value_worker, value_manager, action_probs, goal, nabla_dcos, states = self.shared_model(last_obs.unsqueeze(0), states)
+                m = Categorical(probs=action_probs)
+                print(action_probs)
+                action = m.sample()
+
+
+                obs, reward, game_status = self.env.step(torch.IntTensor([[action.item()]]))
+                done = not self.env.status_to_bool(game_status)
+                last_obs = obs
+
+                if done:
+                   
+                    break
+              
+           
+
+          
+           
+
 
 
     def save(self):

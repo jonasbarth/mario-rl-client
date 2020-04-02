@@ -7,7 +7,7 @@ import numpy as np
 from collections import namedtuple
 from itertools import count
 import random
-
+import datetime
 
 import torch
 import torch.nn as nn
@@ -267,8 +267,10 @@ class DDQNAgent:
             i_loss = np.array([])
             print("Episode", i_episode, "finished")
 
-        policy_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
-        target_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
+        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        policy_path = "./models/" + dt + "_epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
+        target_path = "./models/" + dt + "_epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(Q, policy_path)
         self.env.save_model(target_Q, target_path)
       
@@ -293,8 +295,7 @@ class DDQNAgent:
             last_obs, reward, game_status = self.env.start_state()
             game_status = self.status_to_bool(game_status)
 
-            print(last_obs.shape, last_obs[-1])
-            
+         
             # The loss for the episode
             i_loss = np.array([])
 
@@ -318,6 +319,7 @@ class DDQNAgent:
                 
                 obs, reward, game_status = self.env.step(action)
                 game_status = self.status_to_bool(game_status)
+                print(reward)
                
                 # Store other info in replay memory
                 replay_buffer.store_effect(last_idx, action, reward, game_status)

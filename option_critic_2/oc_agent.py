@@ -3,6 +3,7 @@ import argparse
 import torch
 from copy import deepcopy
 from itertools import count
+import datetime
 
 from option_critic import critic_loss as critic_loss_fn
 from option_critic import actor_loss as actor_loss_fn
@@ -172,8 +173,10 @@ class OCAgent:
                 #logger.log_data(steps, actor_loss, critic_loss, entropy.item(), epsilon)
 
             #logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
-        policy_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
-        target_path = "./models/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
+
+        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        policy_path = "./models/" + dt + "_ + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
+        target_path = "./models/" + dt + "_ + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(self.option_critic, policy_path)
         self.env.save_model(self.option_critic_target, target_path)
 
