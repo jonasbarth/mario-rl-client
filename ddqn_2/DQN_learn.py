@@ -162,7 +162,7 @@ class DDQNAgent:
                 
                 obs, reward, game_status = self.env.step(action)
                 game_status = self.status_to_bool(game_status)
-
+                #print(reward)
                 tb.add_scalar("Reward per timestep", reward, total_steps)
                 i_reward = np.append(i_reward, reward)
                
@@ -267,10 +267,9 @@ class DDQNAgent:
             i_loss = np.array([])
             print("Episode", i_episode, "finished")
 
-        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        policy_path = "./models/" + dt + "_epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
-        target_path = "./models/" + dt + "_epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
+        dt = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        policy_path = "./models/" + dt + "_eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
+        target_path = "./models/" + dt + "_eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(Q, policy_path)
         self.env.save_model(target_Q, target_path)
       

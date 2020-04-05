@@ -105,7 +105,7 @@ class OCAgent:
             #while not done: #and ep_steps < self.max_steps_ep:
             for t in count():
                 print("\t Step", t)
-                epsilon = self.option_critic.epsilon
+                epsilon = self.linear_epsilon(i_episode)
 
                 if option_termination:
                     option_lengths[current_option].append(curr_op_len)
@@ -174,7 +174,7 @@ class OCAgent:
 
             #logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
 
-        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        dt = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         policy_path = "./models/" + dt + "_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
         target_path = "./models/" + dt + "_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(self.option_critic, policy_path)
@@ -257,3 +257,13 @@ class OCAgent:
                 ep_steps += 1
                 curr_op_len += 1
                 obs = next_obs
+
+    def linear_epsilon(self, t):
+        fraction  = min(float(t) / self.num_episodes, 1.0)
+        return self.option_critic.eps_start + fraction * (self.option_critic.eps_end - self.option_critic.eps_start)
+
+    """
+    def sinusoidal_epsilon(self, t):
+        def sin_eps(eps_start, decay, i_episode, m, N):
+        return self.option_critic.eps_start * decay ** i_episode * (1/2) * (1 + math.cos((2*math.pi * i_episode * m) / N))
+    """
