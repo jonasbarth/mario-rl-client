@@ -274,7 +274,6 @@ class FunAgent:
                
                 value_worker, value_manager, action_probs, goal, nabla_dcos, states = self.shared_model(last_obs.unsqueeze(0), states)
                 m = Categorical(probs=action_probs)
-                print(action_probs)
                 action = m.sample()
 
 

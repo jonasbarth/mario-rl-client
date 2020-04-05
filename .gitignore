@@ -1,3 +1,4 @@
 ./ddqn_2/models
 ./fun/models
 ./option_critic_2/models
+./analysis/*.png
