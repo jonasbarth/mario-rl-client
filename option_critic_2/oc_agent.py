@@ -41,7 +41,7 @@ class OCAgent:
         comment = f'_model={self.model_name} replay_buffer_size={self.max_history} batch_size={self.batch_size} \
         gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
         num_options={self.num_options} target_update_freq={self.target_update_freq} \
-        num_episodes={self.num_episodes} level={self.env.level_name()} egocentric={self.env.egocentric}'
+        num_episodes={self.num_episodes} level={self.env.level_name()} egocentric={self.env.egocentric} frame_skip={self.env.frame_skip}'
         
         # Writer for Tensorboard
         tb = SummaryWriter(comment=comment)

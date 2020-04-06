@@ -7,7 +7,7 @@ import pandas as pd
 
 class Game:
     
-    def __init__(self, visible, scale, mario_state, timer, fps, level_path, preprocessor, rgb, egocentric):
+    def __init__(self, visible, scale, mario_state, timer, fps, level_path, preprocessor, rgb, egocentric, frame_skip):
         self.visible = visible
         self.scale = scale
         self.mario_state = mario_state
@@ -16,6 +16,7 @@ class Game:
         self.level_path = level_path
         self.rgb = rgb
         self.egocentric = egocentric
+        self.frame_skip = frame_skip
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(port=25335))
         self.preprocessor = preprocessor
         self.right =  [False,True,False,False,False]
