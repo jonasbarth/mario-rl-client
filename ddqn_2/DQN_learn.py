@@ -99,7 +99,7 @@ class DDQNAgent:
         comment = f'_model={self.model_name} replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
         gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
         frame_history_len={self.frame_history_len} target_update_freq={self.target_update_freq} \
-        num_episodes={self.num_episodes} level={self.env.level_name()}'
+        num_episodes={self.num_episodes} level={self.env.level_name()} egocentric={self.env.egocentric}'
 
         # Writer for Tensorboard
         tb = SummaryWriter(comment=comment)
