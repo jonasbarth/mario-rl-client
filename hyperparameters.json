@@ -17,6 +17,7 @@
     "replay_buffer_size":100000,
     "learning_starts":10000,
     "learning_freq":4,
+    "frame_skip": 4,
     "frame_history_len":4,
     "target_update_freq":1000,
     "learning_rate":0.0001,
