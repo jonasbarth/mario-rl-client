@@ -35,7 +35,7 @@ class Game:
 
         
     def start_state(self):
-        obs = self.gateway.entry_point.initGameEnv(self.visible, self.scale, self.mario_state, self.timer, self.fps, self.level_path, self.preprocessor.scaled_width, self.preprocessor.scaled_height, self.rgb, self.egocentric)
+        obs = self.gateway.entry_point.initGameEnv(self.visible, self.scale, self.mario_state, self.timer, self.fps, self.level_path, self.preprocessor.scaled_width, self.preprocessor.scaled_height, self.rgb, self.egocentric, self.frame_skip)
         
         reward = obs.getValue()
         frames = obs.getByteArray()
