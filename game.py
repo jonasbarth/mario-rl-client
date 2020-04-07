@@ -4,6 +4,7 @@ import numpy as np
 import torch
 import os, errno
 import pandas as pd
+import shutil
 
 class Game:
     
@@ -89,13 +90,18 @@ class Game:
         torch.save(model.state_dict(), path)
         print("Model saved")
 
+    
+    def directory(self, path):
+        if not os.path.exists(path):
+            os.mkdir(path)
+            print("Directory " , path,  " Created ")
+        else:    
+            print("Directory " , path,  " already exists")
 
-    def save_parameters(self, path, level, n_actions, n_channels, batch_size, gamma):
-        self.delete(path)
-        f = open(path, "w+")
-        f.write("Level = " + self.game.level_path[15:-4])
-        
-        f.close()
+
+    def save_parameters(self, dest_path):
+        source = "../hyperparameters.json"
+        shutil.copyfile(source, dest_path)
         
         
     def load_model(self, path):

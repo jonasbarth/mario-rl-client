@@ -95,7 +95,7 @@ class DDQNAgent:
 
 
     def train(self):
-
+       
         comment = f'_model={self.model_name} replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
         gamma={self.gamma} learning_starts={self.learning_starts} learning_freq={self.learning_freq} \
         target_update_freq={self.target_update_freq} \
@@ -267,9 +267,11 @@ class DDQNAgent:
             i_loss = np.array([])
             print("Episode", i_episode, "finished")
 
-        dt = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        policy_path = "./models/" + dt + "_eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
-        target_path = "./models/" + dt + "_eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
+        dt = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        self.env.directory("./models/" + dt)
+        self.env.save_parameters("./models/" + dt + "/hyperparameters.json")
+        policy_path = "./models/" + dt + "/eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
+        target_path = "./models/" + dt + "/eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(Q, policy_path)
         self.env.save_model(target_Q, target_path)
       
