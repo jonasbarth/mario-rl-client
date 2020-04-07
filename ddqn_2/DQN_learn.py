@@ -97,8 +97,8 @@ class DDQNAgent:
     def train(self):
 
         comment = f'_model={self.model_name} replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
-        gamma={self.gamma} learning_starts={self.learning_starts} learning=freq={self.learning_freq} \
-        frame_history_len={self.frame_history_len} target_update_freq={self.target_update_freq} \
+        gamma={self.gamma} learning_starts={self.learning_starts} learning_freq={self.learning_freq} \
+        target_update_freq={self.target_update_freq} \
         num_episodes={self.num_episodes} level={self.env.level_name()} egocentric={self.env.egocentric} frame_skip={self.env.frame_skip}'
 
         # Writer for Tensorboard
