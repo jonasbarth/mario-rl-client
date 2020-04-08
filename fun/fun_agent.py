@@ -73,7 +73,7 @@ class FunAgent:
             + "gamma_manager=" + str(self.gamma_manager) + "_alpha=" + str(self.alpha) + "_tau_worker=" + str(self.tau_worker) \
             + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \
             + "_num_episodes=" + str(self.num_episodes) + "_level=" + self.env.level_name() + "_ego=" + str(self.env.egocentric) \
-            + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + self.max_steps
+            + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + str(self.max_steps)
         #seed = self.seed + self.rank
         torch.manual_seed(self.seed)
 
@@ -260,7 +260,7 @@ class FunAgent:
             + "gamma_manager=" + str(self.gamma_manager) + "_alpha=" + str(self.alpha) + "_tau_worker=" + str(self.tau_worker) \
             + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \ 
             + "_num_episodes=" + str(self.num_episodes) + "_level=" + self.env.level_name() + "_ego=" + str(self.env.egocentric) \
-            + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + self.max_steps
+            + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + str(self.max_steps)
         #seed = self.seed + self.rank
         torch.manual_seed(self.seed)
 

@@ -46,5 +46,5 @@
     "num_steps": 400,
     "rgb": true,
     "egocentric": false,
-    "total_steps": 100000
+    "max_steps": 100000
 }
