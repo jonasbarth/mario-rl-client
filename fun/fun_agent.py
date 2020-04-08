@@ -62,6 +62,7 @@ class FunAgent:
 
 
     def train(self):
+         #  + "_value_worker_loss_coef=" + str(self.value_worker_loss_coef) + "_max_grad_norm=" + str(self.max_grad_norm) \
         """
         comment = f'_model={self.model_name} \
         gamma={self.gamma} gamma_worker={self.gamma_worker} gamma_manager={self.gamma_manager} \
@@ -71,7 +72,6 @@ class FunAgent:
         comment="_model=" + self.model_name + "_gamma=" + str(self.gamma) + "_gamma_worker=" + str(self.gamma_worker) \
             + "gamma_manager=" + str(self.gamma_manager) + "_alpha=" + str(self.alpha) + "_tau_worker=" + str(self.tau_worker) \
             + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \
-          #  + "_value_worker_loss_coef=" + str(self.value_worker_loss_coef) + "_max_grad_norm=" + str(self.max_grad_norm) \
             + "_num_episodes=" + str(self.num_episodes) + "_level=" + self.env.level_name() + "_ego=" + str(self.env.egocentric) \
             + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + self.max_steps
         #seed = self.seed + self.rank
@@ -249,6 +249,7 @@ class FunAgent:
 
 
     def train_steps(self):
+         #  + "_value_worker_loss_coef=" + str(self.value_worker_loss_coef) + "_max_grad_norm=" + str(self.max_grad_norm) \
         """
         comment = f'_model={self.model_name} \
         gamma={self.gamma} gamma_worker={self.gamma_worker} gamma_manager={self.gamma_manager} \
@@ -257,8 +258,7 @@ class FunAgent:
         max_grad_norm={self.max_grad_norm} num_episodes={self.num_episodes} level={self.env.level_name()}'"""
         comment="_model=" + self.model_name + "_gamma=" + str(self.gamma) + "_gamma_worker=" + str(self.gamma_worker) \
             + "gamma_manager=" + str(self.gamma_manager) + "_alpha=" + str(self.alpha) + "_tau_worker=" + str(self.tau_worker) \
-            + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \
-          #  + "_value_worker_loss_coef=" + str(self.value_worker_loss_coef) + "_max_grad_norm=" + str(self.max_grad_norm) \
+            + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \ 
             + "_num_episodes=" + str(self.num_episodes) + "_level=" + self.env.level_name() + "_ego=" + str(self.env.egocentric) \
             + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + self.max_steps
         #seed = self.seed + self.rank
