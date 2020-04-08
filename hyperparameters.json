@@ -44,5 +44,7 @@
     "max_grad_norm": 40,
     "num_processes": 4,
     "num_steps": 400,
-    "rgb": true
+    "rgb": true,
+    "egocentric": false,
+    "total_steps": 100000
 }
