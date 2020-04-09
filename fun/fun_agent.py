@@ -245,7 +245,7 @@ class FunAgent:
             self.optimizer.step()
             
 
-        self.save()
+        self.save(b_steps=False)
 
 
     def train_steps(self):
@@ -432,7 +432,7 @@ class FunAgent:
             self.optimizer.step()
             
 
-        self.save()
+        self.save(b_steps=True)
 
 
     def play(self):
@@ -482,17 +482,23 @@ class FunAgent:
 
 
 
-    def save(self):
+    def save(self, b_steps):
+        
         dt = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         self.env.directory("./models/" + dt)
         self.env.save_parameters("./models/" + dt + "/hyperparameters.json")
 
-        fun_path = "./models/" + dt + "/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "fun.pt"
-        worker_path = "./models/" + dt + "/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "worker.pt"
-        manager_path = "./models/" + dt + "/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "manager.pt"
-        perception_path = "./models/" + dt + "/epochs_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "perception.pt"
+        name = "/epochs_" + str(self.num_episodes)
+        if b_steps:
+            name = "/max_steps_" + str(self.max_steps)
+
+        fun_path = "./models/" + dt + name + "_" + self.env.level_path[15:-4] + "_" + "fun.pt"
+        worker_path = "./models/" + dt + name + "_" + self.env.level_path[15:-4] + "_" + "worker.pt"
+        manager_path = "./models/" + dt + name + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "manager.pt"
+        perception_path = "./models/" + dt + name + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "perception.pt"
 
         self.env.save_model(self.shared_model, fun_path)
         self.env.save_model(self.shared_model.worker, worker_path)
         self.env.save_model(self.shared_model.manager, manager_path)
         self.env.save_model(self.shared_model.perception, perception_path)
+
