@@ -6,6 +6,7 @@ from torch.autograd import Variable
 from fun import FeudalNet
 
 from itertools import count
+import datetime
 
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np
@@ -268,6 +269,7 @@ class FunAgent:
         total_loss = np.array([])
         total_reward = np.array([])
         total_steps = 0
+        total_eps = 0
 
         ###observation space is numpy array of pixels
         ###action space is the numpy array of actions
@@ -286,9 +288,9 @@ class FunAgent:
         done = True
 
         episode_length = 0
-        #for epoch in count():
-        for i_episode in range(self.num_episodes):
-            print("Episode", i_episode)
+        
+        while total_steps < self.max_steps:
+            print("Episode", total_eps)
             obs, reward, game_status = self.env.start_state()
             # Sync with the shared model
             model.load_state_dict(self.shared_model.state_dict())
@@ -354,8 +356,10 @@ class FunAgent:
                 if done:
                     break
 
-            tb.add_scalar("Cumulative Reward per episode", i_reward.sum(), i_episode)
-            tb.add_scalar("Average reward per episode", i_reward.mean(), i_episode)
+            
+
+            tb.add_scalar("Cumulative Reward per episode", i_reward.sum(), total_eps)
+            tb.add_scalar("Average reward per episode", i_reward.mean(), total_eps)
 
             R_worker = torch.zeros(1, 1)
             R_manager = torch.zeros(1, 1)
@@ -404,7 +408,8 @@ class FunAgent:
                 + self.value_worker_loss_coef * value_worker_loss
 
             print("\tCalculating total loss")
-            tb.add_scalar("Total loss per episode", total_loss, i_episode)
+            tb.add_scalar("Total loss per episode", total_loss, total_eps)
+            total_eps += 1
             total_loss.backward()
             """
             with lock:
@@ -501,4 +506,6 @@ class FunAgent:
         self.env.save_model(self.shared_model.worker, worker_path)
         self.env.save_model(self.shared_model.manager, manager_path)
         self.env.save_model(self.shared_model.perception, perception_path)
+
+        self.env.zip_directory("./models/" + dt, dt)
 
