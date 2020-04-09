@@ -276,7 +276,7 @@ class DDQNAgent:
         target_path = "./models/" + dt + "/eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(Q, policy_path)
         self.env.save_model(target_Q, target_path)
-      
+        self.env.zip_directory("./models/" + dt, dt)
         print("Training finished")
 
 
@@ -309,7 +309,7 @@ class DDQNAgent:
         total_steps = 0
         total_eps = 0
 
-        while total_steps < self.num_total_steps:
+        while total_steps < self.max_steps:
         
             print("Starting episode", total_eps)
             ###############
@@ -461,11 +461,11 @@ class DDQNAgent:
         dt = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         self.env.directory("./models/" + dt)
         self.env.save_parameters("./models/" + dt + "/hyperparameters.json")
-        policy_path = "./models/" + dt + "/eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
-        target_path = "./models/" + dt + "/eps_" + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
+        policy_path = "./models/" + dt + "/eps_" + str(self.max_steps) + "_" + self.env.level_path[15:-4] + "_" + "policy.pt"
+        target_path = "./models/" + dt + "/eps_" + str(self.max_steps) + "_" + self.env.level_path[15:-4] + "_" + "target.pt"
         self.env.save_model(Q, policy_path)
         self.env.save_model(target_Q, target_path)
-      
+        self.env.zip_directory("./models/" + dt, dt)
         print("Training finished")
         
         

@@ -5,6 +5,7 @@ import torch
 import os, errno
 import pandas as pd
 import shutil
+from zipfile import ZipFile
 
 class Game:
     
@@ -102,6 +103,21 @@ class Game:
     def save_parameters(self, dest_path):
         source = "../hyperparameters.json"
         shutil.copyfile(source, dest_path)
+
+    def zip_directory(self, path, zip_name):
+        
+        files = os.listdir(path)
+        print("Creating zip file at", path)
+        with ZipFile(path + ".zip", 'w') as zip_file:
+            for folderName, subfolders, filenames in os.walk(path):
+                for filename in filenames:
+                    print("Adding", filename)
+                    #create complete filepath of file in directory
+                    filePath = os.path.join(folderName, filename)
+                    # Add file to zip
+                    zip_file.write(filePath)
+
+            print(zip_file)
         
         
     def load_model(self, path):

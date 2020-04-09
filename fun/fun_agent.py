@@ -256,9 +256,9 @@ class FunAgent:
         alpha={self.alpha} tau_worker={self.tau_worker} entropy_coef={self.entropy_coef} \
         value_manager_loss_coef={self.value_manager_loss_coef} value_worker_loss_coef={self.value_worker_loss_coef} \
         max_grad_norm={self.max_grad_norm} num_episodes={self.num_episodes} level={self.env.level_name()}'"""
-        comment="_model=" + self.model_name + "_gamma=" + str(self.gamma) + "_gamma_worker=" + str(self.gamma_worker) \
+        comment="_model=" + self.model_name + "_gamma=" + str(self.gamma) + "_gamma_worker=" + str(self.gamma_worker)  \
             + "gamma_manager=" + str(self.gamma_manager) + "_alpha=" + str(self.alpha) + "_tau_worker=" + str(self.tau_worker) \
-            + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \ 
+            + "_entropy_coef=" + str(self.entropy_coef) + "_value_manager_loss_coef=" + str(self.value_manager_loss_coef) \
             + "_num_episodes=" + str(self.num_episodes) + "_level=" + self.env.level_name() + "_ego=" + str(self.env.egocentric) \
             + "_frame_skip=" + str(self.env.frame_skip) + "_max_steps=" + str(self.max_steps)
         #seed = self.seed + self.rank
