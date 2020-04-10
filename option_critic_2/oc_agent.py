@@ -415,7 +415,7 @@ class OCAgent:
                 obs = next_obs
 
     def linear_epsilon(self, t):
-        fraction  = min(float(t) / self.num_episodes, 1.0)
+        fraction  = min(float(t) / self.max_steps, 1.0)
         return self.option_critic.eps_start + fraction * (self.option_critic.eps_min - self.option_critic.eps_start)
 
     """
