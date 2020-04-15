@@ -280,7 +280,7 @@ class DDQNAgent:
         print("Training finished")
 
 
-    def train_steps(self):
+    def train_steps(self, policy=None, target=None):
         
        
         comment = f'_model={self.model_name} replay_buffer_size={self.replay_buffer_size} batch_size={self.batch_size} \
@@ -293,9 +293,14 @@ class DDQNAgent:
         tb = SummaryWriter(comment=comment)
 
 
-        # Initialize target q function and q function
+        # Initialize target q function and q function    
         Q = self.q_func(self.input_arg, self.num_actions).type(dtype)
         target_Q = self.q_func(self.input_arg, self.num_actions).type(dtype)
+
+        if policy != None and target != None:
+            Q.load_state_dict(policy)
+            target_Q.load_state_dict(target)
+
 
         # Construct Q network optimizer function
         optimizer = self.optimizer_spec.constructor(Q.parameters(), **self.optimizer_spec.kwargs)
