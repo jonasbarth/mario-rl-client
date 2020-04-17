@@ -153,9 +153,10 @@ class DDQNAgent:
                 recent_observations = replay_buffer.encode_recent_observation()
                 
                 action = None
-                # Choose random action if not yet start learning
+                # Choose random action if not yet start learning. Subtract learning_starts from total_steps because
+                # we want the epsilon to start at the beginning
                 if total_steps > self.learning_starts:
-                    action = self.select_epilson_greedy_action(Q, recent_observations, total_steps)
+                    action = self.select_epilson_greedy_action(Q, recent_observations, total_steps-self.learning_starts)
                    
                 else:
                     action = torch.IntTensor([[random.randrange(self.num_actions)]])
