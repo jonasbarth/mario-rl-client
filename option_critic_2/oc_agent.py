@@ -16,7 +16,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 class OCAgent:
 
-    def __init__(self, env, option_critic, num_episodes, max_history, max_steps_total, max_steps_ep, num_options, seed, learning_rate, batch_size, learning_freq, target_update_freq, gamma, learning_starts, max_steps):
+    def __init__(self, env, option_critic, num_episodes, max_history, max_steps_total, max_steps_ep, num_options, seed, learning_rate, batch_size, learning_freq, target_update_freq, gamma, learning_starts, max_steps, schedule):
         self.env = env
         self.option_critic = option_critic
         self.option_critic_target = deepcopy(option_critic)
@@ -34,6 +34,8 @@ class OCAgent:
         self.learning_starts = learning_starts
         self.model_name = "Option Critic"
         self.max_steps = max_steps
+        self.schedule = schedule
+       
 
 
 
@@ -256,7 +258,7 @@ class OCAgent:
             #while not done: #and ep_steps < self.max_steps_ep:
             for t in count():
                 print("\t Step", t)
-                epsilon = self.linear_epsilon(i_episode)
+                epsilon = self.schedule.value(total_steps - self.learning_starts)
 
                 if option_termination:
                     option_lengths[current_option].append(curr_op_len)
