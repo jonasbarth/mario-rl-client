@@ -499,8 +499,8 @@ class FunAgent:
 
         fun_path = "./models/" + dt + name + "_" + self.env.level_path[15:-4] + "_" + "fun.pt"
         worker_path = "./models/" + dt + name + "_" + self.env.level_path[15:-4] + "_" + "worker.pt"
-        manager_path = "./models/" + dt + name + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "manager.pt"
-        perception_path = "./models/" + dt + name + str(self.num_episodes) + "_" + self.env.level_path[15:-4] + "_" + "perception.pt"
+        manager_path = "./models/" + dt + name + "_" + self.env.level_path[15:-4] + "_" + "manager.pt"
+        perception_path = "./models/" + dt + name  + "_" + self.env.level_path[15:-4] + "_" + "perception.pt"
 
         self.env.save_model(self.shared_model, fun_path)
         self.env.save_model(self.shared_model.worker, worker_path)

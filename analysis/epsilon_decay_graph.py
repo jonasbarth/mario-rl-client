@@ -15,6 +15,10 @@ def exp_eps(eps_start, eps_end, t, eps_decay, N):
     return eps ** eps_decay
     #return eps_start * decay ** t * (1/2) * (1/ N)
 
+def exp_eps_2(eps_start, eps_end, t, N):
+    #eps = eps_start + (min(t / N, eps_start) * (eps_end - eps_start)) 
+    #return eps ** eps_decay
+    return eps_end + (eps_start - eps_end) * math.exp(-1. * t / N)
 
 
 def sin_eps(eps_start, decay, i_episode, m, N):
@@ -28,20 +32,23 @@ eps_start=1.0
 eps_min=0.1
 eps_decay=int(1e6)
 
-linear = np.array([])
-sinusoidal = np.array([])
+linear = np.arange(N, dtype=float)
+sinusoidal = np.arange(N, dtype=float)
+exp = np.arange(N, dtype=float)
 
 
 for n in range(N):
     eps = oc_eps(eps_min, eps_start, n + 1, eps_decay)
-    linear = np.append(linear, lin_eps(eps_start, eps_min, n+1, N))
-    sinusoidal = np.append(sinusoidal, sin_eps(eps_start, decay, n + 1, m, N))
+    linear[n] = lin_eps(eps_start, eps_min, n+1, N)
+    sinusoidal[n] = sin_eps(eps_start, decay, n + 1, m, N)
+    exp[n] = exp_eps_2(eps_start, eps_min, n+1, N/4)
+    #print(linear[n], lin_eps(eps_start, eps_min, n+1, N))
 
-    
     
 plt.plot(linear, label="Linear Decay")
 plt.plot(sinusoidal, label="Sinusoidal Decay")
-plt.xlabel("Episodes")
+plt.plot(exp, label="Exponential Decay")
+plt.xlabel("Timesteps")
 plt.ylabel("Epsilon")
 plt.legend()
-plt.savefig("epsilon_decay")
+plt.savefig("epsilon_decay", format="eps")
