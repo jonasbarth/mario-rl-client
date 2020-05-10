@@ -1,6 +1,0 @@
-conda install -c conda-forge tensorboard
-conda install -c conda-forge py4j
-conda install -c anaconda runipy
-sudo apt-get install -y xvfb
-sudo apt install default-jre
-
